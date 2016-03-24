@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Parkcouver - Vancouver's Park Finder</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Custom handle for share to Facebook-->
+    <meta property="fb:app_id" content="424105504451038"/>
+    <meta property="og:title" content="Parkcouver">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="http://parkcouver.pythonanywhere.com">
+    <meta property="og:image" content="http://parkcouver.pythonanywhere.com/static/images/stanleypark.jpg">
+    <meta property="og:site_name" content="Parkcouver">
+    <meta property="og:description" content="We will help you find information about any park in Vancouver!">
+
+    <!--<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/css/custom.css">-->
+    <link href='http://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css"
+          href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="static/css/bootstrap-social.css">
+    <link href="http://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Lato" rel="stylesheet" type="text/css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <style>
+
+        .parkImage img {
+        max-width:100%;
+        border: 10px solid #000;
+        border-bottom: 45px solid #000;
+        -webkit-box-shadow: 3px 3px 3px #777;
+        -moz-box-shadow: 3px 3px 3px #777;
+        box-shadow: 3px 3px 3px #777;
+        -webkit-transform: rotate(0deg);
+        -moz-transform: rotate(0deg);
+        -ms-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+        transform: rotate(0deg);
+        }
+
+
+
+        .fb-share-button {
+        transform: scale(1.35);
+        -ms-transform: scale(1.35);
+        -webkit-transform: scale(1.35);
+        -o-transform: scale(1.35);
+        -moz-transform: scale(1.35);
+        transform-origin: bottom left;
+        -ms-transform-origin: bottom left;
+        -webkit-transform-origin: bottom left;
+        -moz-transform-origin: bottom left;
+        -webkit-transform-origin: bottom left;
+        }
+        #floating-panel {
+        position: absolute;
+        z-index: 3;
+        padding: 5px;
+        text-align: center;
+        margin-left: 12%;
+        margin-top: -2.0%;
+        line-height: 30px;
+        padding-left: 10px;
+        }
+        body {
+        font: 400 15px Lato, sans-serif;
+        line-height: 1.8;
+        color: #818181;
+        }
+        h2 {
+        font-size: 24px;
+        text-transform: uppercase;
+        color: #303030;
+        font-weight: 600;
+        margin-bottom: 30px;
+        }
+        h3 {
+        font-size: 32px;
+        text-transform: uppercase;
+        color: #303030;
+        font-weight: 600;
+        margin-bottom: 30px;
+        }
+        h4 {
+        font-size: 19px;
+        line-height: 1.375em;
+        color: #303030;
+        font-weight: 400;
+        margin-bottom: 30px;
+        }
+        .center {
+        float: none;
+        margin-left: auto;
+        margin-right: auto;
+        }
+        .jumbotron {
+        background-color: #508147;
+        color: #fff;
+        padding: 100px 25px;
+        font-family: Montserrat, sans-serif;
+        }
+        .container-fluid {
+        padding: 60px 50px;
+        }
+        .bg-grey {
+        background-color: #dfe3ee;
+        }
+        .logo-small {
+        color: #325d30;
+        font-size: 30px;
+        }
+        .logo {
+        color: #325d30;
+        font-size: 200px;
+        }
+        .thumbnail {
+        padding: 0 0 15px 0;
+        border: none;
+        border-radius: 0;
+        }
+        .thumbnail img {
+        width: 100%;
+        height: 100%;
+        margin-bottom: 10px;
+        }
+        .carousel-control.right, .carousel-control.left {
+        background-image: none;
+        color: #508147;
+        }
+        .carousel-indicators li {
+        border-color: #508147;
+        }
+        .carousel-indicators li.active {
+        background-color: #508147;
+        }
+        .item h4 {
+        font-size: 19px;
+        line-height: 1.375em;
+        font-weight: 400;
+        font-style: italic;
+        margin: 70px 0;
+        }
+        .item span {
+        font-style: normal;
+        }
+        .panel {
+        border: 1px solid #508147;
+        border-radius:0 !important;
+        transition: box-shadow 0.5s;
+        }
+        .panel:hover {
+        box-shadow: 5px 0px 40px rgba(0,0,0, .2);
+        }
+        .panel-footer .btn:hover {
+        border: 1px solid #508147;
+        background-color: #fff !important;
+        color: #508147;
+        }
+        .panel-heading {
+        color: #fff !important;
+        background-color: #508147 !important;
+        padding: 25px;
+        border-bottom: 1px solid transparent;
+        border-top-left-radius: 0px;
+        border-top-right-radius: 0px;
+        border-bottom-left-radius: 0px;
+        border-bottom-right-radius: 0px;
+        }
+        .panel-footer {
+        background-color: white !important;
+        }
+        .panel-footer h3 {
+        font-size: 32px;
+        }
+        .panel-footer h4 {
+        color: #aaa;
+        font-size: 14px;
+        }
+        .panel-footer .btn {
+        margin: 15px 0;
+        color: #fff;
+        }
+        .panel-footer .btn-custom {
+        margin: 15px 0;
+        background-color: #508147;
+        }
+
+        .btn-favourite {
+        margin: 15px 0;
+        color: #fff;
+        background-color: #508147;
+        }
+
+        .btn-favourite:hover {
+        border: 1px solid #508147;
+        background-color: #fff !important;
+        color: #508147;
+        }
+
+        .navbar {
+        margin-bottom: 0;
+        background-color: #325d30;
+        z-index: 9999;
+        border: 0;
+        font-size: 12px !important;
+        line-height: 1.42857143 !important;
+        letter-spacing: 4px;
+        border-radius: 0;
+        font-family: Montserrat, sans-serif;
+        }
+        .navbar li a, .navbar .navbar-brand {
+        color: #fff !important;
+        }
+        .navbar-nav li a:hover, .navbar-nav li.active a {
+        color: #508147 !important;
+        background-color: #fff !important;
+        }
+        .navbar-default .navbar-toggle {
+        border-color: transparent;
+        color: #fff !important;
+        }
+        footer .glyphicon {
+        font-size: 20px;
+        margin-bottom: 20px;
+        color: #508147;
+        }
+        .slideanim {visibility:hidden;}
+        .slide {
+        animation-name: slide;
+        -webkit-animation-name: slide;
+        animation-duration: 1s;
+        -webkit-animation-duration: 1s;
+        visibility: visible;
+        }
+        @keyframes slide {
+        0% {
+        opacity: 0;
+        -webkit-transform: translateY(70%);
+        }
+        100% {
+        opacity: 1;
+        -webkit-transform: translateY(0%);
+        }
+        }
+        @-webkit-keyframes slide {
+        0% {
+        opacity: 0;
+        -webkit-transform: translateY(70%);
+        }
+        100% {
+        opacity: 1;
+        -webkit-transform: translateY(0%);
+        }
+        }
+        @media screen and (max-width: 768px) {
+        .col-sm-4 {
+        text-align: center;
+        margin: 25px 0;
+        }
+        .btn-lg {
+        width: 100%;
+        margin-bottom: 35px;
+        }
+        }
+        @media screen and (max-width: 480px) {
+        .logo {
+        font-size: 150px;
+        }
+        }
+    </style>
+</head>
+
+<body id="parkcouver" data-spy="scroll" data-target=".navbar" data-offset="60">
+
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#parkcouver">
+                <span class="fa fa-tree"></span>
+            </a>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav navbar-right">
+                <li class="page-scroll"><a href="#map">MAP</a></li>
+                <li class="page-scroll"><a href="#facilities">FACILITIES</a></li>
+                <li class="page-scroll"><a href="#connect">CONNECT</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Container (Home Section) -->
+<div class="jumbotron text-center">
+
+    {% if user and not user.is_anonymous %}
+    <p>Hello {{ user.get_short_name }} !</p>
+    {% endif %}
+
+    <h1>Parkcouver</h1>
+
+    <p>Vancouver's Park Finder</p>
+
+    <form class="form-inline" action="" method="get">
+        <input type="text" class="form-control" size="50" placeholder="Find your park" name="q" list="parklist">
+        <button type="submit" class="btn btn-default">Search&nbsp;&nbsp;<i class="fa fa-search"></i></button>
+        <datalist id="parklist"></datalist>
+        <script type="text/javascript">
+            var parkNames = {{ json_list|safe }};
+            var options = '';
+            for(var i = 0; i < parkNames.length; i++)
+                options += '<option value = "'+parkNames[i]+'" />';
+                document.getElementById('parklist').innerHTML =options;
+
+
+        </script>
+
+        {% if errors %}
+        {% for error in errors %}
+        <p><strong>Error!&nbsp;</strong>{{ error }}</p>
+        {% endfor %}
+        {% endif %}
+
+    </form>
+</div>
+
+<div class="container-fluid text-center bg-grey" style="margin-top:-2.5%">
+    <div class="row">
+        <div class="col-sm-4">
+            <span class="fa fa-map-o logo"></span>
+            <br>
+            <h4>MAPS</h4>
+
+            <p>Pin points the exact location of the park of interest!</p>
+        </div>
+        <div class="col-sm-4">
+            <span class="fa fa-compass logo"></span>
+            <br>
+            <h4>DIRECTS</h4>
+
+            <p>Gives closest route from your location to destination!</p>
+        </div>
+        <div class="col-sm-4">
+            <span class="fa fa-list logo"></span>
+            <br>
+            <h4>LISTS</h4>
+
+            <p>Lists all facilities at the park of interest!</p>
+        </div>
+    </div>
+</div>
+
+<!-- Container (Map Section) -->
+<section id="map">​
+
+    <div id="floating-panel">
+        <section>
+            <form class="form-inline">
+                <input type="text" id="address" class="form-control" size="50" placeholder="Enter Your Address"
+                       name="q">
+                ​
+                <button type="button" id="submit" class="btn btn-default">Search&nbsp;&nbsp;<i class="fa fa-search"></i>
+                </button>
+            </form>
+        </section>
+    </div>
+
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+    <div id="googleMap" style="height:575px;width:100%;margin-top:-2.5%"></div>
+
+    <!-- Google Maps -->
+    <script type="text/javascript">
+        function init_map() {
+            var map = new google.maps.Map(document.getElementById("googleMap"), {
+                center: {lat: 49.2462, lng: -123.116226},
+                zoom: 12,
+                scrollwheel: false
+            });
+            var infoWindow = new google.maps.InfoWindow({map: map});
+
+           var geocoder = new google.maps.Geocoder();
+           document.getElementById('submit').addEventListener('click', function() {
+           geocodeAddress(geocoder, map);
+           });
+
+            // Try HTML5 geolocation.
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+
+                    var pos = { lat: position.coords.latitude, lng: position.coords.longitude };
+
+                    infoWindow.setPosition(pos);
+                    infoWindow.setContent('You are here');
+                    map.setCenter(pos);
+
+                    if ({{search}} == 1) {
+                        marker = new google.maps.Marker({ map: map, position: new google.maps.LatLng({{lat}}, {{lon}})});
+                        infowindow = new google.maps.InfoWindow({content:"<b>{{park.name}}</b><br/>{{park.streetNum}} {{park.streetName}}<br/>" }); 
+                        google.maps.event.addListener(marker, "click", function(){infowindow.open(map,marker);}); 
+                        infowindow.open(map,marker);
+                        var dest = {lat: {{lat}}, lng: {{lon}} };
+
+                        var request = {
+                          destination: dest,
+                          origin: pos,
+                          travelMode: google.maps.TravelMode.DRIVING
+                        }
+
+                        var directionsDisplay = new google.maps.DirectionsRenderer ({
+                          map: map,
+                          suppressMarkers: true
+                        });
+
+                        var directionsService = new google.maps.DirectionsService();
+
+                        directionsService.route(request, function(response, status){
+                          if (status == google.maps.DirectionsStatus.OK){
+                              directionsDisplay.setDirections(response);
+                          }
+                        });
+                    }
+                },
+                function() {
+                    handleLocationError(true, infoWindow, map.getCenter());
+                });
+            }
+            else {
+               // Browser doesn't support Geolocation
+                handleLocationError(false, infoWindow, map.getCenter());
+            }
+        }
+
+        function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+            infoWindow.setPosition(pos);
+            infoWindow.setContent(browserHasGeolocation ?
+                            'Error: The Geolocation service failed.' :
+                            'Error: Your browser doesn\'t support geolocation.');
+        }
+
+         function geocodeAddress(geocoder, resultsMap) {
+            var address = document.getElementById('address').value;
+            geocoder.geocode({'address': address}, function(results, status) {
+                if (status === google.maps.GeocoderStatus.OK) {
+                    resultsMap.setCenter(results[0].geometry.location);
+                    var marker = new google.maps.Marker({
+                        map: resultsMap,
+                          position: results[0].geometry.location
+                    });
+                }
+                else {
+                    alert('Geocode was not successful for the following reason: ' + status);
+                }
+            });
+        }
+
+        google.maps.event.addDomListener(window, 'load', init_map);
+
+    </script>
+</section>
+
+<!-- Container (Facilities Section) -->
+<section id="facilities">
+    <div class="container-fluid text-center bg-grey">
+        <div class="col-md-6 center">
+            <h3>{{ park.name }}</h3>
+
+            <div id="fb-root" style="text-align:center;">
+                <!--Twitter Tweet button -->
+                <a class="twitter-share-button"
+                   href="https://twitter.com/share"
+                   data-size="large"
+                   data-text="Find Vancouver's parks!"
+                   data-url="http://parkcouver.pythonanywhere.com"
+                   data-count="none"
+                   data-hashtags="Parkcouver">Tweet</a>
+
+                <!--Facebook 'Share' button-->
+                <div class="fb-share-button"
+                     data-href="http://parkcouver.pythonanywhere.com"
+                     data-layout="button_count">
+                </div>
+            </div>
+
+            <br>
+
+            <h4><i class="fa fa-map-marker logo-small"></i>&nbsp;{{ park.streetNum }} {{ park.streetName }}</h4>
+            <h4><i class="fa fa-male logo-small"></i>&nbsp;<i class="fa fa-female logo-small">&nbsp;</i>&nbsp;{{park.washroom}}
+            </h4>
+            <h4><i class="fa fa-leaf logo-small"></i>
+                {% for facility in parkFacilitiesArray %}
+                {{facility}} <br>
+                {% endfor %}
+            </h4>
+            <h4><i class="fa fa-star logo-small"></i>
+                {{ parkSpecialFeatures }}</h4>
+        </div>
+        <br>
+
+        <div class="parkImage">
+            <img src="{{ fullImageUrl }}" alt="">
+        </div>
+
+    <!--Facebook Twitter Share and Tweet scripts-->
+    <script>(function(d, s, id) {
+                    var js, fjs = d.getElementsByTagName(s)[0];
+                    if (d.getElementById(id)) return;
+                    js = d.createElement(s); js.id = id;
+                    js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.5";
+                    fjs.parentNode.insertBefore(js, fjs);
+                    }(document, 'script', 'facebook-jssdk'));
+
+
+    </script>
+
+    <script>!function(d,s,id) {
+                    var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';
+                    if(!d.getElementById(id)){js=d.createElement(s);
+                    js.id=id;js.src=p+'://platform.twitter.com/widgets.js';
+                    fjs.parentNode.insertBefore(js,fjs);
+                    }}(document, 'script', 'twitter-wjs');
+
+
+    </script>
+
+
+    </div>
+    </div>
+</section>
+
+
+<!-- Container (Favourite/Connect Section) -->
+<section id="connect">
+    <div class="container-fluid">
+        <div class="row slideanim">
+            <div class="col-md-5 center">
+                <div class="panel panel-default text-center">
+                    <div class="panel-heading">
+                        <h1>Favourite Parks</h1>
+                    </div>
+                    {% if user and not user.is_anonymous %}
+                    <div class="panel-body">
+
+                        {% if favparks %}
+                        {% for fav in favparks %}
+                        <p><strong>{{fav.name}}</strong></p>
+                        {% endfor %}
+                        {% endif %}
+
+                        <!--Favourite parks button-->
+                        <a class="btn btn-favourite btn-sm" href="/favourite_park">
+                            <span class="fa fa-heart"></span>&nbsp;&nbsp;Add to favourites
+                        </a>
+
+                    </div>
+
+                    <div class="panel-footer plan">
+                        <a class="btn btn-md btn-custom" href="/logout">
+                            <span class="fa fa-sign-out"></span>&nbsp;Logout</a>
+                    </div>
+
+                    {% else %}
+                    <div class="panel-footer plan">
+                        <h2>Want a list of favourite parks?</h2>
+                        <h4>Connect with us!</h4>
+
+                        <div class="btn-group-vertical">
+                            <a class="btn btn-social btn-md btn-facebook" ,
+                               href="{% url 'social:begin' 'facebook' %}?next={{ request.path }}">
+                                <span class="fa fa-facebook"></span>Sign in with Facebook
+                            </a>
+                            <a class="btn btn-social btn-md btn-twitter" ,
+                               href="{% url 'social:begin' 'twitter' %}?next={{ request.path }}">
+                                <span class="fa fa-twitter"></span>Sign in with Twitter
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+$(document).ready(function(){
+  // Add smooth scrolling to all links in navbar + footer link
+  $(".navbar a, footer a[href='#myPage']").on('click', function(event) {
+
+    // Prevent default anchor click behavior
+    event.preventDefault();
+
+    // Store hash
+    var hash = this.hash;
+
+    // Using jQuery's animate() method to add smooth page scroll
+    // The optional number (900) specifies the number of milliseconds it takes to scroll to the specified area
+    $('html, body').animate({
+      scrollTop: $(hash).offset().top
+    }, 900, function(){
+
+      // Add hash (#) to URL when done scrolling (default click behavior)
+      window.location.hash = hash;
+    });
+  });
+
+  // Slide in elements on scroll
+  $(window).scroll(function() {
+    $(".slideanim").each(function(){
+      var pos = $(this).offset().top;
+
+      var winTop = $(window).scrollTop();
+        if (pos < winTop + 600) {
+          $(this).addClass("slide");
+        }
+    });
+  });
+})
+
+
+</script>
+</body>
+</html>
